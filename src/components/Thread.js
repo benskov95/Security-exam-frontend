@@ -1,40 +1,41 @@
 import { useEffect, useState } from "react";
-import threadFacade from "../facades/threadFacade";
+import postFacade from "../facades/postFacade";
 import "bootstrap/dist/css/bootstrap.css";
-import {
-    Switch,
-    Route,
-    Link
-  } from "react-router-dom";
-
+import printError from "../utils/error";
+import { useParams } from "react-router";
 
 export default function Thread() {
-    const [threads, setThreads] = useState([]);
+    const [posts, setPosts] = useState([]);
     const [error, setError] = useState("");
+    let {threadId} = useParams();
+
+    useEffect(() => {
+        postFacade.getPostsByThreadId(threadId)
+        .then(res => setPosts([...res]))
+        .catch((promise) => {
+            if (promise.fullError) {
+              printError(promise, setError);
+            } else {
+              setError("No response from API. Make sure it is running.");
+            }
+          });    
+        }, [])
 
     return (
-        <div>
         <div className="container">
         <p style={{ color: "red" }}>{error}</p>
         <table className="table" style={{borderCollapse: "separate", borderSpacing: "1px 5px"}}>
-        <thead>
-            <th></th>
-            <th></th>
-            <th></th>
-        </thead>
+        <th></th>
         <tbody>
-        {threads.map((thread) => {
+        {posts.map((post) => {
             return (
-            <tr key={thread.title} style={{border: "solid black 1px"}}>
-            <td><Link to="/#">{thread.title}</Link></td>
-            <td>{thread.user}</td>
-            <td>{thread.posts.length}</td>
+            <tr key={post.id} style={{border: "solid black 1px"}}>
+            <td>{post.content}</td>
             </tr>
             )
         })}
         </tbody>
         </table>
-      </div>
         </div>
     )
 }

@@ -15,18 +15,19 @@ import Admin from "./Admin";
 import Register from "./Register";
 import NoMatch from "./NoMatch"
 import PrivateRoute from "./PrivateRoute"
+import CatThreads from "../components/CatThreads";
+import Thread from "../components/Thread";
 
 export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
 
   let token = JSON.parse(atob(localStorage.getItem("jwtToken").split(".")[1]));
   let user = isLoggedIn ? `Logged in as: ${token.username}` : "";
-  let {path, url} = useRouteMatch();
 
   return (
     <div>
       <ul className="header">
         <li>
-          <NavLink exact activeClassName="selected" to="/">
+          <NavLink exact activeClassName="selected" to="/home">
             Home
           </NavLink>
         </li>
@@ -73,9 +74,15 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
         <Route path="/ca3-startcode">
           <Redirect to="/" />
         </Route>
-        <Route exact path="/">
-          <Home path={path} url={url}/>
-          </Route>
+        <Route exact path="/home">
+          <Home />
+        </Route>
+        <Route path="/home/:catId/:threadId">
+          <Thread />
+        </Route>
+        <Route path="/home/:catId">
+          <CatThreads />
+        </Route>
         <PrivateRoute path="/example" isLoggedIn={isLoggedIn} component={Example} />
         <PrivateRoute path="/admin" isLoggedIn={isLoggedIn} component={Admin} />
         <Route path="/login">

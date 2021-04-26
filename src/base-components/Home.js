@@ -5,13 +5,14 @@ import printError from "../utils/error";
 import {
   Switch,
   Route,
-  Link
+  Link,
+  useRouteMatch
 } from "react-router-dom";
-import Thread from "../components/Thread";
 
-export default function Home({url, path}) {
+export default function Home() {
   const [categories, setCategories] = useState([])
   const [error, setError] = useState("");
+  let {url} = useRouteMatch();
 
   useEffect(() => {
     categoryFacade.getAllCategories()
@@ -37,21 +38,13 @@ export default function Home({url, path}) {
       {categories.map((cat) => {
         return (
         <tr key={cat.id} style={{border: "solid black 1px"}}>
-          <td style={{fontSize: "24px"}}><Link to={`${url}/${cat.name}`}>{cat.name}</Link></td>
+          <td style={{fontSize: "24px"}}><Link to={`${url}/${cat.id}`}>{cat.name}</Link></td>
         </tr>
         )
       })}
       </tbody>
       </table>
       </div>
-      <Switch>
-        <Route exact path={path}>
-          <h3>????</h3>
-        </Route>
-        <Route path={`${path}/:catId`}>
-          <Thread />
-        </Route>
-      </Switch>
     </div>
   );
 }
