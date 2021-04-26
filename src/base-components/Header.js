@@ -6,6 +6,7 @@ import {
   Route,
   NavLink,
   Redirect,
+  useRouteMatch,
 } from "react-router-dom";
 import { Login } from "./Login";
 import Home from "./Home";
@@ -17,8 +18,9 @@ import PrivateRoute from "./PrivateRoute"
 
 export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
 
-  let user = isLoggedIn ? `Logged in as: ${localStorage.getItem("user")}` : "";
-  let roles = isLoggedIn ? `Roles: ${localStorage.getItem("roles")}` : "";
+  let token = JSON.parse(atob(localStorage.getItem("jwtToken").split(".")[1]));
+  let user = isLoggedIn ? `Logged in as: ${token.username}` : "";
+  let {path, url} = useRouteMatch();
 
   return (
     <div>
@@ -28,7 +30,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
             Home
           </NavLink>
         </li>
-        {isLoggedIn && (
+        {/* {isLoggedIn && (
           <React.Fragment>
             <li>
               <NavLink activeClassName="active" to="/example">
@@ -36,8 +38,8 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
               </NavLink>
             </li>
           </React.Fragment>
-        )}
-        {roles.includes("admin") && (
+        )} */}
+        {token.role.includes("admin") && (
           <React.Fragment>
             <li>
               <NavLink activeClassName="active" to="/admin">
@@ -63,7 +65,6 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
         <li style={{ float: "right", color: "white", marginRight: "20px" }}>
           {user}
           <br />
-          {roles}
         </li>
       </ul>
 
@@ -73,7 +74,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
           <Redirect to="/" />
         </Route>
         <Route exact path="/">
-          <Home />
+          <Home path={path} url={url}/>
           </Route>
         <PrivateRoute path="/example" isLoggedIn={isLoggedIn} component={Example} />
         <PrivateRoute path="/admin" isLoggedIn={isLoggedIn} component={Admin} />

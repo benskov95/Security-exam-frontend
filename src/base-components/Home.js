@@ -1,53 +1,57 @@
 import { useEffect, useState } from "react";
-import { LOCAL_URL, REMOTE_URL } from "../utils/settings";
+import categoryFacade from "../facades/categoryFacade"
+import "bootstrap/dist/css/bootstrap.css";
+import printError from "../utils/error";
+import {
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+import Thread from "../components/Thread";
 
-export let URL = "";
+export default function Home({url, path}) {
+  const [categories, setCategories] = useState([])
+  const [error, setError] = useState("");
 
-export default function Home() {
-  const [currentURL, setCurrentURL] = useState(
-    URL === LOCAL_URL ? "Local API" : URL === REMOTE_URL ? "Remote API" : "none"
-  );
-
-  useEffect(() => {}, [currentURL]);
-
-  const changeURL = (e) => {
-    URL = e.target.value;
-    if (URL === LOCAL_URL) {
-      setCurrentURL("Local API");
-    } else {
-      setCurrentURL("Remote API");
-    }
-  };
+  useEffect(() => {
+    categoryFacade.getAllCategories()
+    .then(res => setCategories([...res]))
+    .catch((promise) => {
+      if (promise.fullError) {
+        printError(promise, setError);
+      } else {
+        setError("No response from API. Make sure it is running.");
+      }
+    });
+  }, []) 
 
   return (
     <div>
-      <h1>Home</h1>
-      <p>This is BornIT's SPA startcode</p>
-      <br />
-      <p style={{ fontWeight: "bold" }}>
-        Select which API to use <br />
-        Currently using: {currentURL}
-      </p>
-      <select onChange={changeURL}>
-        <option value="">Choose...</option>
-        <option value={LOCAL_URL}>Local API</option>
-        <option value={REMOTE_URL}>Remote API</option>
-      </select>
-      <br /><br />
-      <h2>Getting started</h2>
-      <br />
-      <p>
-        If you have followed the README from the repo for this startcode<br />
-        you should have your URLs set up properly and be ready to go. <br />
-        From here, you should do the following:<br /> <br />
-
-        - Select API to use <br />
-        - Register new user (if first time) <br />
-        - Log in <br />
-        - Check out the provided example <br />
-        - If you have a user with the admin role, check out the admin exclusive section
-
-      </p>
+      <h1 style={{marginTop: "70px"}}> Welcome to Forum™  </h1>
+      <div className="container">
+      <p style={{ color: "red" }}>{error}</p>
+      <table className="table" style={{borderCollapse: "separate", borderSpacing: "1px 5px"}}>
+        <thead>
+        </thead>
+        <tbody>
+      {categories.map((cat) => {
+        return (
+        <tr key={cat.id} style={{border: "solid black 1px"}}>
+          <td style={{fontSize: "24px"}}><Link to={`${url}/${cat.name}`}>{cat.name}</Link></td>
+        </tr>
+        )
+      })}
+      </tbody>
+      </table>
+      </div>
+      <Switch>
+        <Route exact path={path}>
+          <h3>????</h3>
+        </Route>
+        <Route path={`${path}/:catId`}>
+          <Thread />
+        </Route>
+      </Switch>
     </div>
   );
 }

@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import apiFacade from "../base-facades/apiFacade";
-import {URL} from "./Home";
 
 export default function Register() {
-    const initialState = { username: "", password: "" };
+    const initialState = { email: "", username: "", password: "" };
     const [user, setUser] = useState(initialState);
     const [error, setError] = useState("");
     const [msg, setMsg] = useState("");
@@ -15,9 +14,6 @@ export default function Register() {
 
     const registerUser = e => {
         e.preventDefault();
-        if (URL === "") {
-            setError("Remember to select an API on the Home page.");
-        } else {
         if (user.username !== "" || user.password !== "") {
             apiFacade.register(user)
             .then(res => setMsg(`${res.username} has been registered.`))
@@ -30,12 +26,15 @@ export default function Register() {
         } else {
             setError("All fields must be filled out.")
         }
-    }};
+    };
 
     return (
         <div>
             <h2>Register</h2>
             <form onSubmit={registerUser}>
+                <br />
+                <label>Email</label><br />
+                <input onChange={handleChange} value={user.email} name="email"></input>
                 <br />
                 <label>Username</label><br />
                 <input onChange={handleChange} value={user.username} name="username"></input>

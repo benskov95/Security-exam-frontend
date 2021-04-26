@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import apiFacade from "../base-facades/apiFacade";
-import { URL } from "./Home";
+import printError from "../utils/error";
 
 export const Login = ({ isLoggedIn, loginMsg, setLoginStatus }) => {
-  const [user, setUser] = useState({ username: "", password: "" });
+  const [user, setUser] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
@@ -13,9 +13,6 @@ export const Login = ({ isLoggedIn, loginMsg, setLoginStatus }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (URL === "") {
-      setError("Remember to select an API on the Home page.");
-    } else {
       apiFacade
       .login(user)
       .then((res) => setLoginStatus(!isLoggedIn))
@@ -26,7 +23,6 @@ export const Login = ({ isLoggedIn, loginMsg, setLoginStatus }) => {
           setError("No response from API. Make sure it is running.");
         }
       });
-    }
   };
 
   const logout = () => {
@@ -40,9 +36,9 @@ export const Login = ({ isLoggedIn, loginMsg, setLoginStatus }) => {
         <h2>{loginMsg}</h2>
         <br />
         <form onSubmit={handleSubmit}>
-        <label>Username</label><br />
+        <label>Email</label><br />
           <input
-            id="username"
+            id="email"
             onChange={handleChange}
           />
           <br />
@@ -70,9 +66,3 @@ export const Login = ({ isLoggedIn, loginMsg, setLoginStatus }) => {
     );
   }
 };;
-
-const printError = (promise, setError) => {
-  promise.fullError.then(function (status) {
-    setError(`${status.message}`);
-  });
-};

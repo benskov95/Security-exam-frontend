@@ -1,4 +1,4 @@
-import { URL } from "../base-components/Home";
+import URL from "../utils/settings";
 import apiFacade, { handleHttpErrors } from "./apiFacade";
 
 const adminFacade = () => {

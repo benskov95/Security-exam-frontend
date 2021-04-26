@@ -1,4 +1,4 @@
-import { URL } from "../base-components/Home";
+import URL from "../utils/settings";
 
 export function handleHttpErrors(res) {
   if (!res.ok) {
@@ -16,12 +16,6 @@ function apiFacade() {
     return localStorage.getItem("jwtToken");
   };
 
-  const setUserAndRoles = (token) => {
-    let userFromToken = JSON.parse(atob(token.split(".")[1]));
-    localStorage.setItem("user", userFromToken.sub);
-    localStorage.setItem("roles", userFromToken.roles);
-  };
-
   const loggedIn = () => {
     const loggedIn = getToken() != null;
     return loggedIn;
@@ -29,19 +23,16 @@ function apiFacade() {
 
   const logout = () => {
     localStorage.removeItem("jwtToken");
-    localStorage.removeItem("user");
-    localStorage.removeItem("roles");
   };
 
   const login = (user) => {
     const options = makeOptions("POST", true, {
-      username: user.username,
+      email: user.email,
       password: user.password,
     });
     return fetch(URL + "/api/login", options)
       .then(handleHttpErrors)
       .then((res) => {
-        setUserAndRoles(res.token);
         setToken(res.token);
       });
   };
@@ -49,10 +40,11 @@ function apiFacade() {
 
   const register = (user) => {
     const options = makeOptions("POST", false, {
+      email: user.email,
       username: user.username,
       password: user.password,
     });
-    return fetch(URL + "/api/users", options)
+    return fetch(URL + "/api/user", options)
       .then(handleHttpErrors)
   }
 
