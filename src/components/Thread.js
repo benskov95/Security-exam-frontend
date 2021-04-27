@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import postFacade from "../facades/postFacade";
-import "bootstrap/dist/css/bootstrap.css";
 import printError from "../utils/error";
-import { useParams } from "react-router";
+import { Button, Form, Container } from 'semantic-ui-react'
+import 'semantic-ui-css/semantic.min.css'
+import { useParams } from "react-router-dom"
+import "../styles/posts.css";
+import "react-bootstrap/dist/react-bootstrap.min"
 
-export default function Thread() {
+export default function Thread({isLoggedIn, user}) {
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState("");
+    const [newPost, setNewPost] = useState({ "threadId": 0, "content": ""})
     let {threadId} = useParams();
 
     useEffect(() => {
@@ -21,21 +25,55 @@ export default function Thread() {
           });    
         }, [])
 
+    const handleChange = (e) => {
+      setNewPost({ ...newPost, [e.target.name]: e.target.value });
+    }
+  
+    const handleSubmit = (e) => {
+      e.preventDefault()
+      newPost.threadId = threadId
+      console.log(newPost)
+      postFacade.addPost(newPost).then(res => {
+        let refresh = [...posts]
+        refresh.push(res)
+        setPosts(refresh)
+        setNewPost({ "threadId": 0, "content": "" })
+      })
+    }
+
     return (
-        <div className="container">
-        <p style={{ color: "red" }}>{error}</p>
-        <table className="table" style={{borderCollapse: "separate", borderSpacing: "1px 5px"}}>
-        <th></th>
-        <tbody>
-        {posts.map((post) => {
-            return (
-            <tr key={post.id} style={{border: "solid black 1px"}}>
-            <td>{post.content}</td>
-            </tr>
-            )
-        })}
-        </tbody>
-        </table>
-        </div>
+      <Container className="content" style={{marginTop: "80px"}}>
+         <p style={{ color: "red" }}>{error}</p> 
+          
+          {posts.map(post => 
+           <div className="commentContent" key={post.id}> 
+              <div className="commentHeader">
+                {post.user === user ? (
+                  <h3 style={{fontSize: "22px"}}>{post.user} (me)</h3>
+                ) : 
+                  <h3 style={{fontSize: "22px"}}>{post.user}</h3>
+                }
+              </div>
+              <div className="commentTime">{post.postedOn}</div> 
+              <div className="profilpicture">
+              <img className="profileImg" src="https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg" alt=""/>
+              </div>
+          <div className="commentText"><span>{post.content}</span>
+          </div>                    
+         </div>
+       )} 
+      
+      <div className="commentForm">
+           {isLoggedIn ? (
+         <Form reply onSubmit={handleSubmit}>
+            <Form.TextArea onChange={handleChange} name={"content"} value={newPost.content} />
+            <Button style={{backgroundColor : "#5a6268"}} content='Add Post' labelPosition='left' icon='edit' primary />
+          </Form>  
+
+           ): <p style={{color : "red"}}>You must be logged in to comment</p>}
+           
+          </div>    
+
+      </Container>
     )
 }

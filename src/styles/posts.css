@@ -1,0 +1,65 @@
+.content {
+    margin-left: auto;
+    margin-right: auto;
+    width: 500px;
+    margin-bottom: 100px;
+}
+.commentContent{
+    margin: 10px;
+    border-top:1px solid #b4b4b4;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 100px;
+    text-align: left;
+    max-width: 800px;
+    
+}
+.commentHeader{
+    margin-top: 15px;
+    margin-left: 90px;
+    width: 425px;
+}
+
+.commentTime{
+    font-size: 13px;
+    margin-left: 90px;
+}
+
+.commentForm {
+    margin-top: 50px;
+    margin-bottom: 20px;
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+.profilpicture{
+    margin-top: -40px;
+    width: 75px;
+    height: 100px;
+}
+
+.profileImg{
+    float : left;
+    max-width: 75px;
+    
+}
+
+.commentText{
+    margin-top: -50px;
+    margin-left: 90px;
+    width: 400px;
+    overflow: hidden;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    font-size: 16px;
+}
+
+
+.comment {
+    margin-left: auto;
+    margin-right: auto;
+    width: 500px;
+    margin-top: 100px;
+    text-align: justify;
+}

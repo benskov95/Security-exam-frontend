@@ -8,7 +8,14 @@ const postFacade = () => {
     .then(handleHttpErrors);
   };
 
-  return { getPostsByThreadId };
+  const addPost = (post) => {
+    return fetch(URL + "/api/post", apiFacade.makeOptions("POST", true, post))
+    .then(handleHttpErrors);
+  }
+
+  return { getPostsByThreadId
+         , addPost 
+         };
 };
 
 const facade = postFacade();

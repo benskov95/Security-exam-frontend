@@ -1,12 +1,12 @@
 import "../styles/App.css";
 import "../styles/Navbar.css";
 import React from "react";
+import { Nav } from 'react-bootstrap';
 import {
   Switch,
   Route,
   NavLink,
   Redirect,
-  useRouteMatch,
 } from "react-router-dom";
 import { Login } from "./Login";
 import Home from "./Home";
@@ -20,8 +20,8 @@ import Thread from "../components/Thread";
 
 export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
 
-  let token = JSON.parse(atob(localStorage.getItem("jwtToken").split(".")[1]));
-  let user = isLoggedIn ? `Logged in as: ${token.username}` : "";
+  let token = isLoggedIn ? JSON.parse(atob(localStorage.getItem("jwtToken").split(".")[1])) : {"role": ""};
+  let user = isLoggedIn ? `${token.username}` : "";
 
   return (
     <div>
@@ -63,22 +63,36 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
             </li>
           </React.Fragment>
         )}
-        <li style={{ float: "right", color: "white", marginRight: "20px" }}>
-          {user}
-          <br />
-        </li>
+        <Nav.Item style={{ position: 'fixed', right: 0, marginRight: "15px" }}>
+          {isLoggedIn &&
+            <img src="https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg"
+              alt=""
+              // onClick={toggleUserOptions}
+              style={{
+                height: "30px",
+                width: "30px",
+                marginTop: "-2px",
+                cursor: "pointer"
+              }}>
+            </img>
+          }
+          <p style={{ marginTop: "1px", color: "white" }}>{user}</p>
+        </Nav.Item>
       </ul>
 
       <Switch>
       {/* for deployment */}
         <Route path="/ca3-startcode">
-          <Redirect to="/" />
+          <Redirect to="/home" />
+        </Route>
+        <Route exact path="/">
+          <Redirect to="/home" />
         </Route>
         <Route exact path="/home">
           <Home />
         </Route>
         <Route path="/home/:catId/:threadId">
-          <Thread />
+          <Thread isLoggedIn={isLoggedIn} user={user} />
         </Route>
         <Route path="/home/:catId">
           <CatThreads />
