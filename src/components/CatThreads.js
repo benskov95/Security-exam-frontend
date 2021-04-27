@@ -3,8 +3,6 @@ import threadFacade from "../facades/threadFacade";
 import "bootstrap/dist/css/bootstrap.css";
 import printError from "../utils/error";
 import {
-    Switch,
-    Route,
     Link,
     useParams,
     useRouteMatch
@@ -43,7 +41,7 @@ export default function Thread() {
                 <tr key={thread.id} style={{border: "solid black 1px"}}>
                 <td style={{fontSize: "20px"}}><Link to={`${url}/${thread.id}`}>{thread.title}</Link></td>
                 <td>{thread.user}</td>
-                <td>{thread.posts.length}</td>
+                <td>{thread.nPosts}</td>
                 </tr>
                 )
             })}

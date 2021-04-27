@@ -32,7 +32,6 @@ export default function Thread({isLoggedIn, user}) {
     const handleSubmit = (e) => {
       e.preventDefault()
       newPost.threadId = threadId
-      console.log(newPost)
       postFacade.addPost(newPost).then(res => {
         let refresh = [...posts]
         refresh.push(res)
