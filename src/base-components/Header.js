@@ -1,7 +1,7 @@
 import "../styles/App.css";
 import "../styles/Navbar.css";
-import React from "react";
 import { Nav } from 'react-bootstrap';
+import React from "react";
 import {
   Switch,
   Route,
@@ -17,9 +17,10 @@ import NoMatch from "./NoMatch"
 import PrivateRoute from "./PrivateRoute"
 import CatThreads from "../components/CatThreads";
 import Thread from "../components/Thread";
+import Admin_cat from "../components/Admin_cat"
 
 export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
-
+  
   let token = isLoggedIn ? JSON.parse(atob(localStorage.getItem("jwtToken").split(".")[1])) : {"role": ""};
   let user = isLoggedIn ? `${token.username}` : "";
 
@@ -40,15 +41,20 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
             </li>
           </React.Fragment>
         )} */}
-        {token.role.includes("admin") && (
+        {isLoggedIn ? token.role.includes("admin") && (
           <React.Fragment>
             <li>
-              <NavLink activeClassName="active" to="/admin">
-                Admin
+              <NavLink activeClassName="active" to="/manage-users">
+                Manage users
+              </NavLink>
+            </li>
+            <li>
+              <NavLink activeClassName="active" to="/manage-categories">
+              Manage categories
               </NavLink>
             </li>
           </React.Fragment>
-        )}
+        ) : ""}
         <li>
           <NavLink activeClassName="selected" to="/login">
             {loginMsg}
@@ -98,7 +104,8 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
           <CatThreads />
         </Route>
         <PrivateRoute path="/example" isLoggedIn={isLoggedIn} component={Example} />
-        <PrivateRoute path="/admin" isLoggedIn={isLoggedIn} component={Admin} />
+        <PrivateRoute path="/manage-users" isLoggedIn={isLoggedIn} component={Admin} token={token}/>
+        <PrivateRoute path="/manage-categories" isLoggedIn={isLoggedIn} component={Admin_cat}/>
         <Route path="/login">
           <Login
             setLoginStatus={setLoginStatus}
@@ -116,3 +123,5 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
     </div>
   );
 }
+
+

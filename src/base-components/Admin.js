@@ -2,18 +2,27 @@ import adminFacade from "../base-facades/adminFacade";
 import { useEffect, useState } from "react";
 import "../styles/App.css";
 import "bootstrap/dist/css/bootstrap.css";
+import printError from "../utils/error"
 
-export default function Admin() {
+export default function Admin({token}) {
   const [allUsers, setAllUsers] = useState([]);
   const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("")
 
   useEffect(() => {
-    adminFacade.getUsers().then((users) => setAllUsers([...users]));
+    adminFacade.getUsers().then((users) => setAllUsers([...users]))
+    .catch((promise) => {
+      if (promise.fullError) {
+        printError(promise, setErr)
+      } else {
+        setErr("No response from API. Make sure it is running.");
+      }
+    });
   }, [msg]);
 
 
   allUsers.forEach(user => {
-    if (user.username === localStorage.getItem("user")) {
+    if (user.email === token.email) {
       let excludedUser = [...allUsers];
       let index = excludedUser.indexOf(user);
       excludedUser.splice(index, 1);
@@ -22,7 +31,15 @@ export default function Admin() {
   });
 
   const deleteUser = (e) => {
-    adminFacade.deleteUser(e.target.value).then((res) => setMsg(res.userName));
+    adminFacade.deleteUser(e.target.value).then((res) => setMsg(res.userName))
+    .catch((promise) => {
+      if (promise.fullError) {
+        printError(promise, setErr)
+        setMsg("")
+      } else {
+        setErr("No response from API. Make sure it is running.");
+      }
+    });
   };
 
   return (
@@ -30,6 +47,7 @@ export default function Admin() {
       <h1>Hello Admin</h1>
       <br />
       <p>{msg !== "" ? `${msg} has been deleted` : ""} </p>
+      <p style={{color:"red"}}>{err !== "" ? err : ""} </p>
       <br />
       <h3>List of registered users</h3>
       <p> (currently logged-in user is excluded)</p>
@@ -38,19 +56,23 @@ export default function Admin() {
           <thead>
             <tr>
               <th>User</th>
-              <th>Roles</th>
+              <th>Email</th>
+              <th>Role</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {allUsers.map((user) => {
-              let roles = user.roles.join(", ");
               return (
-                <tr key={user.username}>
+                <tr key={user.email}>
                   <td>{user.username}</td>
-                  <td>{roles}</td>
+                  <td>{user.email}</td>
+                  <td>{user.role}</td>
                   <td>
-                    <button className="btn btn-secondary" onClick={deleteUser} value={user.username}>
+                    {user.role.includes("user") ? 
+                    (<button className="btn btn-success" value={user.email}>Promote</button>) :
+                     <button className="btn btn-primary" value={user.email}>Promote</button> } 
+                    <button className="btn btn-danger" onClick={deleteUser} value={user.email}>
                       Delete
                     </button>
                   </td>

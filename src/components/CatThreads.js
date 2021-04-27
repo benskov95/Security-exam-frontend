@@ -28,8 +28,8 @@ export default function Thread() {
             }
           });
     }, [])
-
-    return (
+ 
+     return (
         <div>
             <div className="container">
             <p style={{ color: "red" }}>{error}</p>
