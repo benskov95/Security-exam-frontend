@@ -29,9 +29,31 @@ export default function Admin({token}) {
       setAllUsers([...excludedUser]);
     }
   });
+  const promoteUser = (e) => {
+    adminFacade.promoteUser(e.target.value).then((res) => setMsg(`${res.userName} has been promoted`))
+    .catch((promise) => {
+      if (promise.fullError) {
+        printError(promise, setErr)
+        setMsg("")
+      } else {
+        setErr("No response from API. Make sure it is running.");
+      }
+    });
+  }
+  const demoteUser = (e) => {
+    adminFacade.demoteUser(e.target.value).then((res) => setMsg(`${res.userName} has been demoted`))
+    .catch((promise) => {
+      if (promise.fullError) {
+        printError(promise, setErr)
+        setMsg("")
+      } else {
+        setErr("No response from API. Make sure it is running.");
+      }
+    });
+  }
 
   const deleteUser = (e) => {
-    adminFacade.deleteUser(e.target.value).then((res) => setMsg(res.userName))
+    adminFacade.deleteUser(e.target.value).then((res) => setMsg( `${res.userName} has been deleted`))
     .catch((promise) => {
       if (promise.fullError) {
         printError(promise, setErr)
@@ -46,7 +68,7 @@ export default function Admin({token}) {
     <div>
       <h1>Hello Admin</h1>
       <br />
-      <p>{msg !== "" ? `${msg} has been deleted` : ""} </p>
+      <p>{msg !== "" ? msg : ""} </p>
       <p style={{color:"red"}}>{err !== "" ? err : ""} </p>
       <br />
       <h3>List of registered users</h3>
@@ -70,11 +92,9 @@ export default function Admin({token}) {
                   <td>{user.role}</td>
                   <td>
                     {user.role.includes("user") ? 
-                    (<button className="btn btn-success" value={user.email}>Promote</button>) :
-                     <button className="btn btn-primary" value={user.email}>Promote</button> } 
-                    <button className="btn btn-danger" onClick={deleteUser} value={user.email}>
-                      Delete
-                    </button>
+                    (<button className="btn btn-success" value={user.email} onClick={promoteUser}>Promote</button>) :
+                     <button className="btn btn-primary" value={user.email} onClick={demoteUser}>Demote</button> } 
+                    <button className="btn btn-danger"   value={user.email} onClick={deleteUser} >Delete</button>
                   </td>
                 </tr>
               );
