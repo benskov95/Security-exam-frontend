@@ -30,7 +30,7 @@ export default function Admin({token}) {
     }
   });
   const promoteUser = (e) => {
-    adminFacade.promoteUser(e.target.value).then((res) => setMsg(`${res.userName} has been promoted`))
+    adminFacade.promoteUser(e.target.value).then((res) => setMsg(`${res.username} has been promoted`))
     .catch((promise) => {
       if (promise.fullError) {
         printError(promise, setErr)
@@ -41,7 +41,7 @@ export default function Admin({token}) {
     });
   }
   const demoteUser = (e) => {
-    adminFacade.demoteUser(e.target.value).then((res) => setMsg(`${res.userName} has been demoted`))
+    adminFacade.demoteUser(e.target.value).then((res) => setMsg(`${res.username} has been demoted`))
     .catch((promise) => {
       if (promise.fullError) {
         printError(promise, setErr)
@@ -53,7 +53,7 @@ export default function Admin({token}) {
   }
 
   const deleteUser = (e) => {
-    adminFacade.deleteUser(e.target.value).then((res) => setMsg( `${res.userName} has been deleted`))
+    adminFacade.deleteUser(e.target.value).then((res) => setMsg( `${res.username} has been deleted`))
     .catch((promise) => {
       if (promise.fullError) {
         printError(promise, setErr)
