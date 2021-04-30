@@ -32,10 +32,10 @@ export default function Thread() {
             <div className="container">
             <p style={{ color: "red" }}>{error}</p>
             <table className="table" style={{borderCollapse: "separate", borderSpacing: "1px 5px"}}>
+            <tbody>
             <th>Title</th>
             <th>Posted by</th>
             <th># of posts</th>
-            <tbody>
             {threads.map((thread) => {
                 return (
                 <tr key={thread.id} style={{border: "solid black 1px"}}>
