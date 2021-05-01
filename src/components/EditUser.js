@@ -3,8 +3,10 @@ import printError from "../utils/error";
 import userFacade from "../facades/userFacade";
 
 export default function EditUser({token, setUser}) {
-    const [eUser, setEditUser] = useState({ userPic: "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg", username: token.username, oldPassword: "", password: "", confirmNewPw: "" });
+    let editDefault = { userPic: "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg", username: token.username, oldPassword: "", password: "", confirmNewPw: "" };
+    const [eUser, setEditUser] = useState(editDefault);
     const [error, setError] = useState("");
+    const [picFile, setPicFile] = useState(undefined);
   
     const handleChange = (e) => {
         if (e.target.id === "confirmNewPw") {
@@ -15,13 +17,11 @@ export default function EditUser({token, setUser}) {
   
     const handleSubmit = (e) => {
       e.preventDefault();
+      uploadImage();
       userFacade.editUser(eUser)
       .then(res => {
-          let updatedUser = {...eUser}
+          let updatedUser = {...editDefault}
           updatedUser["username"] = res.username
-          updatedUser["oldPassword"] = ""
-          updatedUser["password"] = ""
-          updatedUser["confirmNewPw"] = ""
           setEditUser({...updatedUser})
           setUser(res.username)
       })
@@ -42,6 +42,35 @@ export default function EditUser({token, setUser}) {
         }
     }
 
+    const grabFile = (e) => {
+      let file = e.target.files[0]
+      if (!file.type.includes("image")) {
+        setError("Only images can be uploaded.")
+        e.target.value = ""
+        setPicFile(undefined)
+      } else {
+      setError("")
+      setPicFile(e.target.files[0])
+      }
+    }
+
+    const uploadImage = () => {
+      if (picFile !== undefined) {
+      userFacade.uploadImage(picFile)
+      .then(res => {
+        let userNewPic = {...eUser}
+        userNewPic["userPic"] = res.data.data.display_url
+        setEditUser({...userNewPic})
+      })
+      .catch((promise) => {
+        if (promise.fullError) {
+          printError(promise, setError);
+        } else {
+          setError("IMGBB not responding.");
+        }
+      })} 
+    }
+
     return (
         <div style={{marginTop: "20px"}}>
         <h1>Edit your account</h1>
@@ -59,8 +88,10 @@ export default function EditUser({token, setUser}) {
         <br />
           <input
             type="file"
+            accept="image/*"
             id="userPic"
-            onChange={handleChange}
+            onChange={grabFile}
+            style={{marginLeft: "200px"}}
           />
           <br />
           <br />
