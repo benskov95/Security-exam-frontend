@@ -68,7 +68,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
         <Nav.Item style={{ position: 'fixed', right: 0, marginRight: "15px" }}>
           {isLoggedIn && (
             <NavLink activeClassName="active" to="/edit">
-            <img src="https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg"
+            <img src={token.imageUrl}
               alt=""
               style={{
                 height: "30px",

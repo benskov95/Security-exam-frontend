@@ -3,11 +3,11 @@ import printError from "../utils/error";
 import userFacade from "../facades/userFacade";
 
 export default function EditUser({token, setUser}) {
-    let editDefault = { userPic: "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg", username: token.username, oldPassword: "", password: "", confirmNewPw: "" };
+    let editDefault = { imageUrl: token.imageUrl, username: token.username, oldPassword: "", password: "", confirmNewPw: "" };
     const [eUser, setEditUser] = useState(editDefault);
     const [error, setError] = useState("");
     const [picFile, setPicFile] = useState(undefined);
-  
+
     const handleChange = (e) => {
         if (e.target.id === "confirmNewPw") {
             verifyPwMatch(e.target.value)
@@ -17,7 +17,7 @@ export default function EditUser({token, setUser}) {
   
     const handleSubmit = (e) => {
       e.preventDefault();
-      uploadImage();
+      uploadImage()
       userFacade.editUser(eUser)
       .then(res => {
           let updatedUser = {...editDefault}
@@ -56,19 +56,19 @@ export default function EditUser({token, setUser}) {
 
     const uploadImage = () => {
       if (picFile !== undefined) {
-      userFacade.uploadImage(picFile)
-      .then(res => {
-        let userNewPic = {...eUser}
-        userNewPic["userPic"] = res.data.data.display_url
-        setEditUser({...userNewPic})
-      })
-      .catch((promise) => {
-        if (promise.fullError) {
-          printError(promise, setError);
-        } else {
-          setError("IMGBB not responding.");
-        }
-      })} 
+        userFacade.uploadImage(picFile)
+        .then(res => {
+          let userNewPic = {...eUser}
+          userNewPic["imageUrl"] = res.data.data.display_url
+          setEditUser({...userNewPic})
+        })
+        .catch((promise) => {
+          if (promise.fullError) {
+            printError(promise, setError);
+          } else {
+            setError("IMGBB not responding.");
+          }
+        })} 
     }
 
     return (
@@ -77,7 +77,7 @@ export default function EditUser({token, setUser}) {
         <br />
         <form onSubmit={handleSubmit}>
         <label>Picture</label><br />
-        <img src={eUser.userPic}
+        <img src={eUser.imageUrl}
               alt=""
               style={{
                 height: "120px",
