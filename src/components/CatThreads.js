@@ -36,7 +36,7 @@ export default function Thread() {
             <th>Title</th>
             <th>Posted by</th>
             <th># of posts</th>
-            <th>Last activity</th>
+            <th>Last active</th>
             {threads.map((thread) => {
                 return (
                 <tr key={thread.id} style={{border: "solid black 1px"}}>
