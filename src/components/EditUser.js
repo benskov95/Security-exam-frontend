@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import printError from "../utils/error";
 import userFacade from "../facades/userFacade";
 
@@ -7,6 +7,12 @@ export default function EditUser({token, setUser}) {
     const [eUser, setEditUser] = useState(editDefault);
     const [error, setError] = useState("");
     const [picFile, setPicFile] = useState(undefined);
+
+    useEffect(() => {
+      if (picFile !== undefined) {
+        uploadImage();
+      }
+    }, [picFile])
 
     const handleChange = (e) => {
         if (e.target.id === "confirmNewPw") {
@@ -17,7 +23,7 @@ export default function EditUser({token, setUser}) {
   
     const handleSubmit = (e) => {
       e.preventDefault();
-      uploadImage()
+      // uploadImage();
       userFacade.editUser(eUser)
       .then(res => {
           let updatedUser = {...editDefault}
@@ -60,7 +66,7 @@ export default function EditUser({token, setUser}) {
         .then(res => {
           let userNewPic = {...eUser}
           userNewPic["imageUrl"] = res.data.data.display_url
-          setEditUser({...userNewPic})
+          setEditUser(userNewPic)
         })
         .catch((promise) => {
           if (promise.fullError) {
@@ -68,7 +74,7 @@ export default function EditUser({token, setUser}) {
           } else {
             setError("IMGBB not responding.");
           }
-        })} 
+        })}; 
     }
 
     return (

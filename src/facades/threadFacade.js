@@ -4,11 +4,18 @@ import apiFacade, { handleHttpErrors } from "../base-facades/apiFacade";
 const threadFacade = () => {
   
   const getAllThreadsByCatId = (id) => {
-    return fetch(URL + `/api/thread/${id}`, apiFacade.makeOptions("GET", true))
+    return fetch(URL + `/api/thread/${id}`, apiFacade.makeOptions("GET"))
     .then(handleHttpErrors);
   };
 
-  return { getAllThreadsByCatId };
+  const getThreadById = (id) => {
+    return fetch(URL + `/api/thread/info/${id}`, apiFacade.makeOptions("GET"))
+    .then(handleHttpErrors)
+  }
+
+  return { getAllThreadsByCatId
+         , getThreadById
+         };
 };
 
 const facade = threadFacade();

@@ -36,12 +36,14 @@ export default function Thread() {
             <th>Title</th>
             <th>Posted by</th>
             <th># of posts</th>
+            <th>Last activity</th>
             {threads.map((thread) => {
                 return (
                 <tr key={thread.id} style={{border: "solid black 1px"}}>
                 <td style={{fontSize: "20px"}}><Link to={`${url}/${thread.id}`}>{thread.title}</Link></td>
                 <td>{thread.user}</td>
-                <td>{thread.nPosts}</td>
+                <td>{thread.posts.length}</td>
+                <td>{thread.posts.pop().postedOn}</td>
                 </tr>
                 )
             })}

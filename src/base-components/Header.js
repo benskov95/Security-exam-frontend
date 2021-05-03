@@ -21,13 +21,12 @@ import EditUser from "../components/EditUser";
 
 export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
   
-  let token = isLoggedIn ? JSON.parse(atob(localStorage.getItem("jwtToken").split(".")[1])) : {"role": ""};
-  let username = isLoggedIn ? `${token.username}` : "";
-  const [user, setUser] = useState(username);
+  let token = isLoggedIn ? JSON.parse(atob(localStorage.getItem("jwtToken").split(".")[1])) : {"username": "", "role": ""};
+  const [user, setUser] = useState(token.username);
 
   useEffect(() => {
-    setUser(username)
-  }, [username])
+    setUser(token.username)
+  }, [token])
 
   return (
     <div>
@@ -65,7 +64,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
             </li>
           </React.Fragment>
         )}
-        <Nav.Item style={{ position: 'fixed', right: 0, marginRight: "15px" }}>
+        <Nav.Item style={{ float: "right", marginRight: "15px" }}>
           {isLoggedIn && (
             <NavLink activeClassName="active" to="/edit">
             <img src={token.imageUrl}
@@ -110,7 +109,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
         </Route>
 
         <Route path="/home/:catId/:threadId">
-          <Thread isLoggedIn={isLoggedIn} user={user} />
+          <Thread isLoggedIn={isLoggedIn} token={token} />
         </Route>
 
         <Route path="/home/:catId">
