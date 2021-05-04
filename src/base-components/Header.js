@@ -23,6 +23,8 @@ import AddThread from "../components/AddThread";
 export default function Header({ isLoggedIn, setLoginStatus, loginMsg, token, setToken }) {
   
   const [user, setUser] = useState({"username": "", "role": "", "imageUrl": ""});
+  const [categories, setCategories] = useState([])
+  const [threads, setThreads] = useState([])
   
   useEffect(() => {
     defineUser();
@@ -116,16 +118,16 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg, token, se
         </Route>
 
         <Route exact path="/home">
-          <Home />
+          <Home isLoggedIn={isLoggedIn} categories={categories} setCategories={setCategories} />
         </Route>
         <Route path="/home/:catId/add-thread">
           <AddThread isLoggedIn={isLoggedIn} component={AddThread} />
         </Route>
         <Route path="/home/:catId/:threadId">
-          <Thread isLoggedIn={isLoggedIn} token={token} />
+          <Thread isLoggedIn={isLoggedIn} user={user} threads={threads} />
         </Route>
         <Route path="/home/:catId">
-          <CatThreads isLoggedIn={isLoggedIn} user={user} />
+          <CatThreads isLoggedIn={isLoggedIn} user={user} categories={categories} threads={threads} setThreads={setThreads} />
         </Route>
 
                  

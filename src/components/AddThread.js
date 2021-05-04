@@ -47,9 +47,8 @@ export default function AddThread(){
           <label>Title</label>
           <br />
           <input required name="title" type="text"onChange={handleChange}/>
-          <br/>
-          <br/>
-         <Form.TextArea required onChange={handleChange} name={"content"}  />
+          <p style={{textAlign: "center", marginTop: "20px"}}>Content</p>
+         <Form.TextArea required onChange={handleChange}  />
          <Button style={{backgroundColor : "green"}} content='Post' labelPosition='right' icon='send' primary />
        </Form>  
        </div>  

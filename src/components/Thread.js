@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import postFacade from "../facades/postFacade";
-import threadFacade from "../facades/threadFacade";
 import printError from "../utils/error";
 import { Button, Form, Container } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
@@ -8,27 +7,25 @@ import "../styles/posts.css";
 import "react-bootstrap/dist/react-bootstrap.min"
 import { useParams } from "react-router";
 
-export default function Thread({isLoggedIn, token}) {
-    let user = token.username;
-    let role = token.role;
+export default function Thread({isLoggedIn, user, threads}) {
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState("");
     const [newPost, setNewPost] = useState({ "threadId": 0, "content": ""})
     let {threadId} = useParams();
-    const [thread, setThread] = useState();
+    const [currentThread, setCurrentThread] = useState();
 
     useEffect(() => {
       getAllPosts();
-      threadFacade.getThreadById(threadId)
-      .then(res => setThread(res))
-      .catch((promise) => {
-        if (promise.fullError) {
-          printError(promise, setError);
-        } else {
-          setError("No response from API. Make sure it is running.");
-        }
-      });   
+      getCurrentThread();
     }, [])
+
+    const getCurrentThread = () => {
+      threads.forEach(thread => {
+        if (thread.id === parseInt(threadId)) {
+          setCurrentThread(thread)
+        }
+      })
+    }
 
     const handleChange = (e) => {
       setNewPost({ ...newPost, [e.target.name]: e.target.value });
@@ -44,6 +41,13 @@ export default function Thread({isLoggedIn, token}) {
         setNewPost({ "threadId": 0, "content": "" })
         setError("")
       })
+      .catch((promise) => {
+        if (promise.fullError) {
+          printError(promise, setError);
+        } else {
+          setError("No response from API. Make sure it is running.");
+        }
+      });  
     }
 
     const getAllPosts = () => {
@@ -59,7 +63,7 @@ export default function Thread({isLoggedIn, token}) {
     }
 
     const deleteMyPost = (e) => {
-      if (posts.length === 1 && posts[0].user.includes(token.username)) {
+      if (posts.length === 1 && posts[0].user.includes(user.username)) {
         setError("Only one post in thread. Go back to the previous page and delete the thread instead.")
       } else {
         let id = e.currentTarget.value
@@ -94,36 +98,41 @@ export default function Thread({isLoggedIn, token}) {
 
     return (
       <Container className="content" style={{marginTop: "40px"}}>
-        <h1 style={{marginBottom: "40px", fontSize: "34px"}}>{thread !== undefined && thread.title}</h1>
+        <h1 style={{marginBottom: "40px", fontSize: "34px"}}>{currentThread !== undefined && currentThread.title}</h1>
          <p style={{ color: "red" }}>{error}</p> 
           {posts.map(post => 
            <div 
            className="commentContent" 
            key={post.id} 
-           style={post.content.includes(`@${user}`) ? 
+           style={post.content.includes(`@${user.username}`) ? 
            {backgroundColor: "rgba(255, 0, 0, 0.3)"} : 
            {backgroundColor: "white"}}> 
 
-              {(post.user.includes(user) && post.role.includes("user")) && (
-                <Button 
-                style={{float: "right", marginTop: "5px", backgroundColor : "red"}}
-                icon="delete"
-                value={post.id}
-                primary
-                onClick={deleteMyPost}>
-                </Button>
+              {isLoggedIn && (
+                <div>
+                {(post.user.includes(user.username) && post.role.includes("user")) && (
+                  <Button 
+                  style={{float: "right", marginTop: "5px", backgroundColor : "red"}}
+                  icon="delete"
+                  value={post.id}
+                  primary
+                  onClick={deleteMyPost}>
+                  </Button>
+                )}
+                {(user.role.includes("admin") || (user.role.includes("moderator"))) && (
+                  <Button 
+                  style={{float: "right", marginTop: "5px", backgroundColor : "#5a6268"}}
+                  icon="delete"
+                  value={post.id}
+                  primary
+                  onClick={deletePost}>
+                  </Button>
+                )}
+                </div>
               )}
-              {(role.includes("admin") || role.includes("moderator")) && (
-                <Button 
-                style={{float: "right", marginTop: "5px", backgroundColor : "#5a6268"}}
-                icon="delete"
-                value={post.id}
-                primary
-                onClick={deletePost}>
-                </Button>
-              )}
+
               <div className="commentHeader">
-                {(post.user.includes(user) && (user !== "")) ? (
+                {(post.user.includes(user.username) && (user !== "")) ? (
                   <h3 style={{fontSize: "22px"}}>{post.user} (me)</h3>
                 ) : 
                   <h3 style={{fontSize: "22px"}}>{post.user}</h3>
