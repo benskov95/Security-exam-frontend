@@ -1,34 +1,37 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import printError from "../utils/error";
 import userFacade from "../facades/userFacade";
 
+
 export default function EditUser({token, setUser}) {
     let editDefault = { imageUrl: token.imageUrl, username: token.username, oldPassword: "", password: "", confirmNewPw: "" };
-    const [eUser, setEditUser] = useState(editDefault);
+    const [editUser, setEditUser] = useState({...editDefault});
     const [error, setError] = useState("");
+    const [msg,setMsg] = useState("")
     const [picFile, setPicFile] = useState(undefined);
+    const [pwMatch, setPwMatch] = useState(false)
 
-    useEffect(() => {
-      if (picFile !== undefined) {
-        uploadImage();
-      }
-    }, [picFile])
-
+    
     const handleChange = (e) => {
         if (e.target.id === "confirmNewPw") {
             verifyPwMatch(e.target.value)
         }
-        setEditUser({ ...eUser, [e.target.id]: e.target.value });
+        setEditUser({ ...editUser, [e.target.id]: e.target.value });
     };
   
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
       e.preventDefault();
-      // uploadImage();
-      userFacade.editUser(eUser)
+
+      if(picFile !== undefined){
+      const response = await userFacade.uploadImage(picFile)
+      editUser["imageUrl"] = response.data.data.display_url
+      }
+      userFacade.editUser(editUser)
       .then(res => {
-          let updatedUser = {...editDefault}
-          updatedUser["username"] = res.username
-          setEditUser({...updatedUser})
+          //let updatedUser = {...editDefault}
+          //updatedUser["username"] = res.username
+          setMsg("Changes saved...")
+          setEditUser({...res})
           setUser(res.username)
       })
       .catch((promise) => {
@@ -41,9 +44,11 @@ export default function EditUser({token, setUser}) {
     };
 
     const verifyPwMatch = (val) => {
-        if (val === eUser.password) {
+        if (val === editUser.password) {
+            setPwMatch(false)
             setError("")
         } else {
+            setPwMatch(true)
             setError("Passwords do not match");
         }
     }
@@ -60,30 +65,13 @@ export default function EditUser({token, setUser}) {
       }
     }
 
-    const uploadImage = () => {
-      if (picFile !== undefined) {
-        userFacade.uploadImage(picFile)
-        .then(res => {
-          let userNewPic = {...eUser}
-          userNewPic["imageUrl"] = res.data.data.display_url
-          setEditUser(userNewPic)
-        })
-        .catch((promise) => {
-          if (promise.fullError) {
-            printError(promise, setError);
-          } else {
-            setError("IMGBB not responding.");
-          }
-        })}; 
-    }
-
     return (
         <div style={{marginTop: "20px"}}>
         <h1>Edit your account</h1>
         <br />
         <form onSubmit={handleSubmit}>
         <label>Picture</label><br />
-        <img src={eUser.imageUrl}
+        <img src={editUser.imageUrl}
               alt=""
               style={{
                 height: "120px",
@@ -104,7 +92,7 @@ export default function EditUser({token, setUser}) {
         <label>Username</label><br />
           <input
             id="username"
-            value={eUser.username}
+            value={editUser.username}
             onChange={handleChange}
           />
           <br />
@@ -130,8 +118,9 @@ export default function EditUser({token, setUser}) {
           />
           <br />
           <br />
+          <p style={{color:"green"}}>{msg}</p>
           <p style={{ color: "red" }}>{error}</p>
-          <input type="submit" value="Update account" className="btn btn-secondary"/>
+          <input disabled={pwMatch} type="submit" value="Update account" className="btn btn-secondary"/>
           <br />
         </form>
       </div>

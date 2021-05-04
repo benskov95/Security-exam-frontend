@@ -18,6 +18,7 @@ import CatThreads from "../components/CatThreads";
 import Thread from "../components/Thread";
 import Admin_cat from "../components/Admin_cat"
 import EditUser from "../components/EditUser";
+import AddThread from "../components/AddThread";
 
 export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
   
@@ -107,15 +108,17 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
         <Route exact path="/home">
           <Home />
         </Route>
-
+        <Route path="/home/:catId/add-thread">
+          <AddThread isLoggedIn={isLoggedIn} component={AddThread} token={token} />
+        </Route>
         <Route path="/home/:catId/:threadId">
           <Thread isLoggedIn={isLoggedIn} token={token} />
         </Route>
-
         <Route path="/home/:catId">
-          <CatThreads />
+          <CatThreads isLoggedIn={isLoggedIn} token={token} />
         </Route>
 
+                 
         <PrivateRoute path="/manage-users" isLoggedIn={isLoggedIn} component={Admin} token={token}/>
         <PrivateRoute path="/manage-categories" isLoggedIn={isLoggedIn} component={Admin_cat}/>
         <PrivateRoute path="/edit" isLoggedIn={isLoggedIn} component={EditUser} token={token} setUser={setUser}/>
