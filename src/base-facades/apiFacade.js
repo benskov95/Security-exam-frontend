@@ -32,9 +32,6 @@ function apiFacade() {
     });
     return fetch(URL + "/api/login", options)
       .then(handleHttpErrors)
-      .then((res) => {
-        setToken(res.token);
-      });
   };
 
 

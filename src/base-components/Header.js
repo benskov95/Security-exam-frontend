@@ -20,14 +20,29 @@ import Admin_cat from "../components/Admin_cat"
 import EditUser from "../components/EditUser";
 import AddThread from "../components/AddThread";
 
-export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
+export default function Header({ isLoggedIn, setLoginStatus, loginMsg, token, setToken }) {
   
-  let token = isLoggedIn ? JSON.parse(atob(localStorage.getItem("jwtToken").split(".")[1])) : {"username": "", "role": ""};
+  // let parsedToken = JSON.parse(token.split(".")[1])
   const [user, setUser] = useState(token.username);
+  const [imageUrl, setImageUrl] = useState(token.imageUrl)
+  console.log(token)
+  
+  
+  // const test = () => {
+  //   if (isLoggedIn && token.jwtToken !== undefined) {
+  //     let hmm = JSON.parse(atob(token.jwtToken).split(".")[1])
+  //     console.log(hmm)
+  //   }
+  // }
 
   useEffect(() => {
-    setUser(token.username)
+    defineUser();
   }, [token])
+
+  const defineUser = () => {
+    setUser(token.username)
+    setImageUrl(token.imageUrl)
+  }
 
   return (
     <div>
@@ -37,7 +52,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
             Home
           </NavLink>
         </li>
-        {isLoggedIn ? token.role.includes("admin") && (
+        {/* {isLoggedIn ? token.role.includes("admin") && (
           <React.Fragment>
             <li>
               <NavLink activeClassName="active" to="/manage-users">
@@ -50,7 +65,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
               </NavLink>
             </li>
           </React.Fragment>
-        ) : ""}
+        ) : ""} */}
         <li>
           <NavLink activeClassName="active" to="/login">
             {loginMsg}
@@ -68,7 +83,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
         <Nav.Item style={{ float: "right", marginRight: "15px" }}>
           {isLoggedIn && (
             <NavLink activeClassName="active" to="/edit">
-            <img src={token.imageUrl}
+            <img src={imageUrl}
               alt=""
               style={{
                 height: "30px",
@@ -98,6 +113,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg }) {
             setLoginStatus={setLoginStatus}
             isLoggedIn={isLoggedIn}
             loginMsg={loginMsg}
+            setToken={setToken}
           />
         </Route>
 

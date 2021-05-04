@@ -50,24 +50,28 @@ export default function Thread({isLoggedIn, token}) {
             (<Link to={`${url}/add-thread`}><button className="btn btn-primary">Add Thread</button></Link>) : 
             <p style={{color : "red"}}>You must be logged in to start a thread</p>}
             <table className="table" style={{borderCollapse: "separate", borderSpacing: "1px 5px"}}>
-            <tbody>
-            <th>Title</th>
-            <th>Posted by</th>
-            <th># of posts</th>
-            <th>Last active</th>
-            <th></th>
-            {threads.map((thread) => {
-                return (
-                <tr key={thread.id} style={{border: "solid black 1px"}}>
-                <td style={{fontSize: "20px"}}><Link to={`${url}/${thread.id}`}>{thread.title}</Link></td>
-                <td>{thread.user}</td>
-                <td>{thread.posts.length}</td>
-                <td>{thread.posts.pop().postedOn}</td>
-                {token.role.includes("admin") && (<td><button onClick={deleteThread} value={thread.id} className="btn btn-danger">Delete</button></td>)}
+              <thead>
+                <tr>
+                <th>Title</th>
+                <th>Posted by</th>
+                <th># of posts</th>
+                <th>Last active</th>
+                <th></th>
                 </tr>
-                )
-            })}
-            </tbody>
+              </thead>
+              <tbody>
+              {threads.map((thread) => {
+                  return (
+                  <tr key={thread.id} style={{border: "solid black 1px"}}>
+                  <td style={{fontSize: "20px"}}><Link to={`${url}/${thread.id}`}>{thread.title}</Link></td>
+                  <td>{thread.user}</td>
+                  <td>{thread.posts.length}</td>
+                  <td>{thread.posts.pop().postedOn}</td>
+                  {token.role.includes("admin") && (<td><button onClick={deleteThread} value={thread.id} className="btn btn-danger">Delete</button></td>)}
+                  </tr>
+                  )
+              })}
+              </tbody>
             </table>
             </div>
         </div>

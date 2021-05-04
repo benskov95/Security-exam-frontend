@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import apiFacade from "../base-facades/apiFacade";
 import printError from "../utils/error";
 
-export const Login = ({ isLoggedIn, loginMsg, setLoginStatus }) => {
+export const Login = ({ isLoggedIn, loginMsg, setLoginStatus, setToken }) => {
   const [user, setUser] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
@@ -15,7 +15,10 @@ export const Login = ({ isLoggedIn, loginMsg, setLoginStatus }) => {
     e.preventDefault();
       apiFacade
       .login(user)
-      .then((res) => setLoginStatus(!isLoggedIn))
+      .then((res) => {
+        setLoginStatus(!isLoggedIn)
+        setToken(res.token)
+      })
       .catch((promise) => {
         if (promise.fullError) {
           printError(promise, setError);

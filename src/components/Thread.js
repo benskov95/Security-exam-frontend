@@ -58,6 +58,7 @@ export default function Thread({isLoggedIn, token}) {
     }
 
     const deleteMyPost = (e) => {
+      console.log("my")
       let id = e.target.value
       postFacade.deleteMyPost(id)
       .then(res => getAllPosts())
@@ -71,7 +72,7 @@ export default function Thread({isLoggedIn, token}) {
     }
 
     const deletePost = (e) => {
-      let id = e.target.value
+      let id = e.currentTarget.value
       postFacade.deletePost(id)
       .then(res => getAllPosts())
       .catch((promise) => {
@@ -114,7 +115,7 @@ export default function Thread({isLoggedIn, token}) {
                 </Button>
               )}
               <div className="commentHeader">
-                {post.user.includes(user) ? (
+                {(post.user.includes(user) && (user !== "")) ? (
                   <h3 style={{fontSize: "22px"}}>{post.user} (me)</h3>
                 ) : 
                   <h3 style={{fontSize: "22px"}}>{post.user}</h3>
@@ -138,15 +139,14 @@ export default function Thread({isLoggedIn, token}) {
        )} 
       
       <div className="commentForm">
-           {isLoggedIn ? (
-         <Form reply onSubmit={handleSubmit}>
+        {isLoggedIn ? (
+          <Form reply onSubmit={handleSubmit}>
             <Form.TextArea onChange={handleChange} name={"content"} value={newPost.content} />
             <Button style={{backgroundColor : "green"}} content='Post' labelPosition='right' icon='send' primary />
           </Form>  
 
-           ): <p style={{color : "red"}}>You must be logged in to comment</p>}
-           
-          </div>    
+        ): <p style={{color : "red"}}>You must be logged in to comment</p>}
+      </div>    
 
       </Container>
     )
