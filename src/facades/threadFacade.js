@@ -21,10 +21,16 @@ const threadFacade = () => {
     .then(handleHttpErrors)
   }
 
+  const deleteMyThread = (id) => {
+    return fetch(URL + `/api/thread/me/${id}`, apiFacade.makeOptions("DELETE", true))
+    .then(handleHttpErrors)
+  }
+
   return { getAllThreadsByCatId
          , getThreadById
          , addThread
          , deleteThread
+         , deleteMyThread
          };
 };
 

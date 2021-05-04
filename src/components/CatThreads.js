@@ -9,7 +9,7 @@ import {
   } from "react-router-dom";
 
 
-export default function Thread({isLoggedIn, token}) {
+export default function Thread({isLoggedIn, user}) {
     const [threads, setThreads] = useState([]);
     const [error, setError] = useState("");
     const [msg, setMsg] = useState("")
@@ -30,8 +30,27 @@ export default function Thread({isLoggedIn, token}) {
 
     const deleteThread = (e) => {
       e.preventDefault()
-      threadFacade.deleteThread(e.target.value)
-      .then(res => setMsg(`${res.title} has been deleted`))
+      threadFacade.deleteThread(e.currentTarget.value)
+      .then(res => {
+        setError("")
+        setMsg(`${res.title} has been deleted`)
+      })
+      .catch((promise) => {
+        if (promise.fullError) {
+          printError(promise, setError);
+        } else {
+          setError("No response from API. Make sure it is running.");
+        }
+      });
+    }
+
+    const deleteMyThread = (e) => {
+      e.preventDefault()
+      threadFacade.deleteMyThread(e.currentTarget.value)
+      .then(res => {
+        setError("")
+        setMsg(`${res.title} has been deleted`)
+      })
       .catch((promise) => {
         if (promise.fullError) {
           printError(promise, setError);
@@ -66,8 +85,25 @@ export default function Thread({isLoggedIn, token}) {
                   <td style={{fontSize: "20px"}}><Link to={`${url}/${thread.id}`}>{thread.title}</Link></td>
                   <td>{thread.user}</td>
                   <td>{thread.posts.length}</td>
-                  <td>{thread.posts.pop().postedOn}</td>
-                  {token.role.includes("admin") && (<td><button onClick={deleteThread} value={thread.id} className="btn btn-danger">Delete</button></td>)}
+                  <td>{thread.posts.length > 0 ? thread.posts.pop().postedOn : ""}</td>
+                  {isLoggedIn && (
+                    <td>
+                      {(user.role.includes("admin") || user.role.includes("moderator")) ? (
+                      <button 
+                      onClick={deleteThread} 
+                      value={thread.id} 
+                      className="btn btn-danger">Delete
+                      </button>
+                      ) : (user.role.includes("user") && thread.user.includes(user.username)) ? (
+                        <button 
+                        onClick={deleteMyThread} 
+                        value={thread.id} 
+                        className="btn btn-danger">Delete
+                        </button>
+                      ): ""} 
+
+                    </td>
+                  )}
                   </tr>
                   )
               })}

@@ -22,26 +22,20 @@ import AddThread from "../components/AddThread";
 
 export default function Header({ isLoggedIn, setLoginStatus, loginMsg, token, setToken }) {
   
-  // let parsedToken = JSON.parse(token.split(".")[1])
-  const [user, setUser] = useState(token.username);
-  const [imageUrl, setImageUrl] = useState(token.imageUrl)
-  console.log(token)
+  const [user, setUser] = useState({"username": "", "role": "", "imageUrl": ""});
   
-  
-  // const test = () => {
-  //   if (isLoggedIn && token.jwtToken !== undefined) {
-  //     let hmm = JSON.parse(atob(token.jwtToken).split(".")[1])
-  //     console.log(hmm)
-  //   }
-  // }
-
   useEffect(() => {
     defineUser();
   }, [token])
 
   const defineUser = () => {
-    setUser(token.username)
-    setImageUrl(token.imageUrl)
+    let loggedInUser = {
+      "email": token.email,
+      "username": token.username, 
+      "role": token.role, 
+      "imageUrl": token.imageUrl
+    }
+    setUser({...loggedInUser})
   }
 
   return (
@@ -52,7 +46,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg, token, se
             Home
           </NavLink>
         </li>
-        {/* {isLoggedIn ? token.role.includes("admin") && (
+        {isLoggedIn ? (user.role !== undefined && user.role.includes("admin")) && (
           <React.Fragment>
             <li>
               <NavLink activeClassName="active" to="/manage-users">
@@ -65,7 +59,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg, token, se
               </NavLink>
             </li>
           </React.Fragment>
-        ) : ""} */}
+        ) : ""}
         <li>
           <NavLink activeClassName="active" to="/login">
             {loginMsg}
@@ -83,7 +77,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg, token, se
         <Nav.Item style={{ float: "right", marginRight: "15px" }}>
           {isLoggedIn && (
             <NavLink activeClassName="active" to="/edit">
-            <img src={imageUrl}
+            <img src={user.imageUrl}
               alt=""
               style={{
                 height: "30px",
@@ -94,7 +88,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg, token, se
             </img>
             </NavLink>
           )}
-          <p style={{ marginTop: "1px", color: "white" }}>{user}</p>
+          <p style={{ marginTop: "1px", color: "white" }}>{user.username}</p>
         </Nav.Item>
       </ul>
 
@@ -125,19 +119,19 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg, token, se
           <Home />
         </Route>
         <Route path="/home/:catId/add-thread">
-          <AddThread isLoggedIn={isLoggedIn} component={AddThread} token={token} />
+          <AddThread isLoggedIn={isLoggedIn} component={AddThread} />
         </Route>
         <Route path="/home/:catId/:threadId">
           <Thread isLoggedIn={isLoggedIn} token={token} />
         </Route>
         <Route path="/home/:catId">
-          <CatThreads isLoggedIn={isLoggedIn} token={token} />
+          <CatThreads isLoggedIn={isLoggedIn} user={user} />
         </Route>
 
                  
-        <PrivateRoute path="/manage-users" isLoggedIn={isLoggedIn} component={Admin} token={token}/>
+        <PrivateRoute path="/manage-users" isLoggedIn={isLoggedIn} component={Admin} user={user}/>
         <PrivateRoute path="/manage-categories" isLoggedIn={isLoggedIn} component={Admin_cat}/>
-        <PrivateRoute path="/edit" isLoggedIn={isLoggedIn} component={EditUser} token={token} setUser={setUser}/>
+        <PrivateRoute path="/edit" isLoggedIn={isLoggedIn} component={EditUser} user={user} setUser={setUser}/>
 
         <Route>
          <NoMatch />

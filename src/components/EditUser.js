@@ -3,45 +3,47 @@ import printError from "../utils/error";
 import userFacade from "../facades/userFacade";
 
 
-export default function EditUser({token, setUser}) {
-    let editDefault = { imageUrl: token.imageUrl, username: token.username, oldPassword: "", password: "", confirmNewPw: "" };
+export default function EditUser({user, setUser}) {
+    let editDefault = { imageUrl: user.imageUrl, username: user.username, oldPassword: "", password: "", confirmNewPw: "" };
     const [editUser, setEditUser] = useState({...editDefault});
     const [error, setError] = useState("");
     const [msg,setMsg] = useState("")
     const [picFile, setPicFile] = useState(undefined);
     const [pwMatch, setPwMatch] = useState(false)
-
     
     const handleChange = (e) => {
         if (e.target.id === "confirmNewPw") {
             verifyPwMatch(e.target.value)
         }
         setEditUser({ ...editUser, [e.target.id]: e.target.value });
+        setMsg("")
     };
   
     const handleSubmit = async(e) => {
       e.preventDefault();
+      let userCopy = {...editUser}
 
-      if(picFile !== undefined){
-      const response = await userFacade.uploadImage(picFile)
-      editUser["imageUrl"] = response.data.data.display_url
-      }
-      userFacade.editUser(editUser)
-      .then(res => {
-          //let updatedUser = {...editDefault}
-          //updatedUser["username"] = res.username
-          setMsg("Changes saved...")
-          setEditUser({...res})
-          setUser(res.username)
-      })
-      .catch((promise) => {
-        if (promise.fullError) {
-          printError(promise, setError);
-        } else {
-          setError("No response from API. Make sure it is running.");
+      if (editUser.username === "") {
+        setError("Username cannot be empty.")
+      } else {
+        if(picFile !== undefined){
+        const response = await userFacade.uploadImage(picFile)
+        editUser["imageUrl"] = response.data.data.display_url
         }
-      });
-    };
+        userFacade.editUser(editUser)
+        .then(res => {
+          updateUsers(res)
+        })
+        .catch((promise) => {
+          if (promise.fullError) {
+            printError(promise, setError);
+            setEditUser(userCopy)
+          } else {
+            setError("No response from API. Make sure it is running.");
+          }
+        });
+      }
+    }
 
     const verifyPwMatch = (val) => {
         if (val === editUser.password) {
@@ -55,7 +57,7 @@ export default function EditUser({token, setUser}) {
 
     const grabFile = (e) => {
       let file = e.target.files[0]
-      if (!file.type.includes("image")) {
+      if (file !== undefined && !file.type.includes("image")) {
         setError("Only images can be uploaded.")
         e.target.value = ""
         setPicFile(undefined)
@@ -63,6 +65,22 @@ export default function EditUser({token, setUser}) {
       setError("")
       setPicFile(e.target.files[0])
       }
+    }
+
+    const updateUsers = (res) => {
+      let updatedUser = {...editDefault}
+      updatedUser["username"] = res.username
+      updatedUser["imageUrl"] = res.imageUrl
+      setEditUser(updatedUser)
+
+      let stateUser = {...user}
+      stateUser["username"] = res.username;
+      stateUser["imageUrl"] = res.imageUrl;
+      setUser(stateUser)
+
+      setMsg("Changes saved.")
+      setError("")
+      setPicFile(undefined)
     }
 
     return (
@@ -93,6 +111,8 @@ export default function EditUser({token, setUser}) {
           <input
             id="username"
             value={editUser.username}
+            minLength={4}
+            maxLength={16}
             onChange={handleChange}
           />
           <br />
@@ -100,6 +120,8 @@ export default function EditUser({token, setUser}) {
           <input
             id="oldPassword"
             type="password"
+            minLength={8}
+            maxLength={16}
             onChange={handleChange}
           />
           <br />
@@ -107,6 +129,8 @@ export default function EditUser({token, setUser}) {
           <input
             id="password"
             type="password"
+            minLength={8}
+            maxLength={16}
             onChange={handleChange}
           />
           <br />
@@ -114,6 +138,8 @@ export default function EditUser({token, setUser}) {
           <input
             id="confirmNewPw"
             type="password"
+            minLength={8}
+            maxLength={16}
             onChange={handleChange}
           />
           <br />

@@ -4,7 +4,7 @@ import "../styles/App.css";
 import "bootstrap/dist/css/bootstrap.css";
 import printError from "../utils/error"
 
-export default function Admin({token}) {
+export default function Admin({user}) {
   const [allUsers, setAllUsers] = useState([]);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("")
@@ -21,14 +21,15 @@ export default function Admin({token}) {
   }, [msg]);
 
 
-  allUsers.forEach(user => {
-    if (user.email === token.email) {
+  allUsers.forEach(lUser => {
+    if (user.email === lUser.email) {
       let excludedUser = [...allUsers];
-      let index = excludedUser.indexOf(user);
+      let index = excludedUser.indexOf(lUser);
       excludedUser.splice(index, 1);
       setAllUsers([...excludedUser]);
     }
   });
+
   const promoteUser = (e) => {
     adminFacade.promoteUser(e.target.value).then((res) => setMsg(`${res.username} has been promoted`))
     .catch((promise) => {

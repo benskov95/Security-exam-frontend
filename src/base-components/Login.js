@@ -17,7 +17,8 @@ export const Login = ({ isLoggedIn, loginMsg, setLoginStatus, setToken }) => {
       .login(user)
       .then((res) => {
         setLoginStatus(!isLoggedIn)
-        setToken(res.token)
+        setToken(JSON.parse(atob(res.token.split(".")[1])))
+        apiFacade.setTokenInUse(res.token);
       })
       .catch((promise) => {
         if (promise.fullError) {
@@ -30,6 +31,7 @@ export const Login = ({ isLoggedIn, loginMsg, setLoginStatus, setToken }) => {
 
   const logout = () => {
     setLoginStatus(false);
+    setToken("");
     apiFacade.logout();
   };
 

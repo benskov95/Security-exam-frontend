@@ -4,9 +4,9 @@ import threadFacade from "../facades/threadFacade";
 import printError from "../utils/error";
 import { Button, Form, Container } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css'
-import { useParams } from "react-router-dom"
 import "../styles/posts.css";
 import "react-bootstrap/dist/react-bootstrap.min"
+import { useParams } from "react-router";
 
 export default function Thread({isLoggedIn, token}) {
     let user = token.username;
@@ -42,6 +42,7 @@ export default function Thread({isLoggedIn, token}) {
         refresh.push(res)
         setPosts(refresh)
         setNewPost({ "threadId": 0, "content": "" })
+        setError("")
       })
     }
 
@@ -58,30 +59,37 @@ export default function Thread({isLoggedIn, token}) {
     }
 
     const deleteMyPost = (e) => {
-      console.log("my")
-      let id = e.target.value
-      postFacade.deleteMyPost(id)
-      .then(res => getAllPosts())
-      .catch((promise) => {
-        if (promise.fullError) {
-          printError(promise, setError);
-        } else {
-          setError("No response from API. Make sure it is running.");
-        }
-      });    
+      if (posts.length === 1 && posts[0].user.includes(token.username)) {
+        setError("Only one post in thread. Go back to the previous page and delete the thread instead.")
+      } else {
+        let id = e.currentTarget.value
+        postFacade.deleteMyPost(id)
+        .then(res => getAllPosts())
+        .catch((promise) => {
+          if (promise.fullError) {
+            printError(promise, setError);
+          } else {
+            setError("No response from API. Make sure it is running.");
+          }
+        });    
+      }
     }
 
     const deletePost = (e) => {
-      let id = e.currentTarget.value
-      postFacade.deletePost(id)
-      .then(res => getAllPosts())
-      .catch((promise) => {
-        if (promise.fullError) {
-          printError(promise, setError);
-        } else {
-          setError("No response from API. Make sure it is running.");
-        }
-      });    
+      if (posts.length === 1) {
+        setError("Only one post in this thread. Go back to the previous page and delete the thread instead.")
+      } else {
+        let id = e.currentTarget.value
+        postFacade.deletePost(id)
+        .then(res => getAllPosts())
+        .catch((promise) => {
+          if (promise.fullError) {
+            printError(promise, setError);
+          } else {
+            setError("No response from API. Make sure it is running.");
+          }
+        });    
+      }
     }
 
     return (

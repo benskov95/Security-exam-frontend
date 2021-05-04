@@ -8,21 +8,23 @@ export function handleHttpErrors(res) {
 }
 
 function apiFacade() {
-  const setToken = (token) => {
-    localStorage.setItem("jwtToken", token);
+  let tokenInUse = ""
+
+  const setTokenInUse = (token) => {
+    tokenInUse = token;
   };
 
-  const getToken = () => {
-    return localStorage.getItem("jwtToken");
+  const getTokenInUse = () => {
+    return tokenInUse;
   };
 
   const loggedIn = () => {
-    const loggedIn = getToken() != null;
+    const loggedIn = getTokenInUse() != null;
     return loggedIn;
   };
 
   const logout = () => {
-    localStorage.removeItem("jwtToken");
+    tokenInUse = "";
   };
 
   const login = (user) => {
@@ -31,7 +33,7 @@ function apiFacade() {
       password: user.password,
     });
     return fetch(URL + "/api/login", options)
-      .then(handleHttpErrors)
+    .then(handleHttpErrors)
   };
 
 
@@ -42,7 +44,7 @@ function apiFacade() {
       password: user.password,
     });
     return fetch(URL + "/api/user", options)
-      .then(handleHttpErrors)
+    .then(handleHttpErrors)
   }
 
   const makeOptions = (method, addToken, body) => {
@@ -54,7 +56,7 @@ function apiFacade() {
       },
     };
     if (addToken && loggedIn()) {
-      opts.headers["x-access-token"] = getToken();
+      opts.headers["x-access-token"] = getTokenInUse();
     }
     if (body) {
       opts.body = JSON.stringify(body);
@@ -63,8 +65,8 @@ function apiFacade() {
   };
   return {
     makeOptions,
-    setToken,
-    getToken,
+    setTokenInUse,
+    getTokenInUse,
     loggedIn,
     login,
     logout,
