@@ -6,12 +6,13 @@ const threadFacade = () => {
   const getAllThreadsByCatId = (id) => {
     return fetch(URL + `/api/thread/${id}`, apiFacade.makeOptions("GET"))
     .then(handleHttpErrors);
-  };
+  }
 
   const getThreadById = (id) => {
-    return fetch(URL + `/api/thread/info/${id}`, apiFacade.makeOptions("GET"))
+    return fetch(URL+ `/api/thread/info/${id}`, apiFacade.makeOptions("GET"))
     .then(handleHttpErrors)
   }
+
   const addThread = (newThread) => {
     return fetch(URL + `/api/thread`, apiFacade.makeOptions("POST",true,newThread))
     .then(handleHttpErrors)
@@ -26,11 +27,17 @@ const threadFacade = () => {
     .then(handleHttpErrors)
   }
 
+  const editMyThread = (thread) => {
+    return fetch(URL + "/api/thread", apiFacade.makeOptions("PUT", true, thread))
+    .then(handleHttpErrors)
+  }
+
   return { getAllThreadsByCatId
          , getThreadById
          , addThread
          , deleteThread
          , deleteMyThread
+         , editMyThread
          };
 };
 

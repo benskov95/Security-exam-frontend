@@ -12,12 +12,12 @@ export default function Admin_cat () {
     const [err, setErr] = useState("")
     const [addModelErr,setAddModalErr] = useState("")
     const [editModelErr, setEditModalErr] = useState("")
-    const [newCat, setNewCat] = useState({name : ""})
-    const [editCat, setEditCat] = useState({id : "",name: ""})
+    const [newCat, setNewCat] = useState({title : ""})
+    const [editCat, setEditCat] = useState({id : "",title: ""})
     const [showAddModal, setShowAddModal] = useState(false)
     const handleAddModal = () => { setShowAddModal(!showAddModal)}
-    const [showEditModel, setShowEditModel] = useState(false)
-    const handleHideEdit = () => setShowEditModel(false)
+    const [showEditModal, setShowEditModal] = useState(false)
+    const handleHideEdit = () => setShowEditModal(false)
     
     useEffect(() => {
       categoryFacade.getAllCategories().then((res  => setCategories([...res])))
@@ -36,7 +36,7 @@ export default function Admin_cat () {
         let input = parseInt(e.target.value)
         let toEdit = categories.find(cat => cat.id === input)
         setEditCat({...toEdit}) 
-        setShowEditModel(!showEditModel)
+        setShowEditModal(!showEditModal)
     }
     const handleEditCat = (e) => {
       setEditCat({ ...editCat, [e.target.name]: e.target.value })
@@ -45,11 +45,8 @@ export default function Admin_cat () {
   }  
     const handleEditSubmit = (e) => {
       e.preventDefault()
-      if(editCat.name.length <= 1){
-        setAddModalErr("Category input invalid")
-      }else {
         categoryFacade.editCategory(editCat).then(res => {setMsg("Changes saved")
-        setShowEditModel(false)})
+        setShowEditModal(false)})
         .catch((promise) => {
           if (promise.fullError) {
             printError(promise, setEditModalErr)
@@ -57,9 +54,7 @@ export default function Admin_cat () {
             setEditModalErr("No response from API. Make sure it is running.");
           }
         });
-
       }
-    }
     
     const deleteCategory = (e) => {
         e.preventDefault();
@@ -88,7 +83,7 @@ export default function Admin_cat () {
             categoryFacade.addCategory(newCat).then(res => {
               handleAddModal(); 
               setMsg(`${res.name} has been added` )
-              setNewCat({name : ""})
+              setNewCat({title : ""})
             } )
             .catch((promise) => {
               if (promise.fullError) {
@@ -160,7 +155,7 @@ export default function Admin_cat () {
         </form>
       </Modal.Body>
     </Modal>
-    <Modal show={showEditModel} onHide={handleHideEdit}>
+    <Modal show={showEditModal} onHide={handleHideEdit}>
       <Modal.Header closeButton>
         <Modal.Title style={{ marginLeft: "35%" }}>Edit category</Modal.Title>
       </Modal.Header>
@@ -171,6 +166,7 @@ export default function Admin_cat () {
           <input
             onChange={handleEditCat}
             name = "name"
+            minLength={2}
             value={editCat.name}
           ></input>
           <br />

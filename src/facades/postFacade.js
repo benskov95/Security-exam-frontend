@@ -23,10 +23,16 @@ const postFacade = () => {
     .then(handleHttpErrors)
   }
 
+  const editMyPost = (post) => {
+    return fetch(URL + `/api/post`, apiFacade.makeOptions("PUT", true, post))
+    .then(handleHttpErrors)
+  }
+
   return { getPostsByThreadId
          , addPost 
          , deleteMyPost
          , deletePost
+         , editMyPost
          };
 };
 

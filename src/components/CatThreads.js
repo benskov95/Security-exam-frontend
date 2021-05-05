@@ -7,64 +7,98 @@ import {
     useParams,
     useRouteMatch
   } from "react-router-dom";
+import 'semantic-ui-css/semantic.min.css'
+import "react-bootstrap/dist/react-bootstrap.min"
+import { Button } from 'semantic-ui-react';
+import { Modal } from "react-bootstrap";
 
 
 export default function CatThreads({isLoggedIn, user, categories, threads, setThreads}) {
-    const [currentCat, setCurrentCat] = useState("");
-    const [error, setError] = useState("");
-    const [msg, setMsg] = useState("")
-    let {catId} = useParams();
-    let {url} = useRouteMatch();
+  const [currentCat, setCurrentCat] = useState("");
+  const [error, setError] = useState("");
+  const [msg, setMsg] = useState("")
+  const [editThread, setEditThread] = useState({id : "", title: ""})
+  const [showEditModal, setShowEditModal] = useState(false)
+  const handleHideEdit = () => setShowEditModal(false)
+  const [editModelErr, setEditModalErr] = useState("")
+  let {catId} = useParams();
+  let {url} = useRouteMatch();
 
-    useEffect(() => {
-      getCurrentCategory();
-      threadFacade.getAllThreadsByCatId(catId)
-      .then(res => setThreads([...res]))
-      .catch((promise) => {
-          if (promise.fullError) {
-            printError(promise, setError);
-          } else {
-            setError("No response from API. Make sure it is running.");
-          }
-        });
-    }, [msg])
-
-    const getCurrentCategory = () => {
-      categories.forEach(cat => {
-        if (cat.id === parseInt(catId)) {
-          setCurrentCat(cat.name)
-        }
-      })
-    }
-
-    const deleteThread = (e) => {
-      e.preventDefault()
-      threadFacade.deleteThread(e.currentTarget.value)
-      .then(res => {
-        setError("")
-        setMsg(`${res.title} has been deleted`)
-      })
-      .catch((promise) => {
+  useEffect(() => {
+    getCurrentCategory();
+    threadFacade.getAllThreadsByCatId(catId)
+    .then(res => setThreads([...res]))
+    .catch((promise) => {
         if (promise.fullError) {
           printError(promise, setError);
         } else {
           setError("No response from API. Make sure it is running.");
         }
       });
+  }, [msg])
+
+  const getCurrentCategory = () => {
+    categories.forEach(cat => {
+      if (cat.id === parseInt(catId)) {
+        setCurrentCat(cat.name)
+      }
+    })
+  }
+
+  const deleteThread = (e) => {
+    e.preventDefault()
+    threadFacade.deleteThread(e.currentTarget.value)
+    .then(res => {
+      setError("")
+      setMsg(`${res.title} has been deleted`)
+    })
+    .catch((promise) => {
+      if (promise.fullError) {
+        printError(promise, setError);
+      } else {
+        setError("No response from API. Make sure it is running.");
+      }
+    });
+  }
+
+  const deleteMyThread = (e) => {
+    e.preventDefault()
+    threadFacade.deleteMyThread(e.currentTarget.value)
+    .then(res => {
+      setError("")
+      setMsg(`${res.title} has been deleted`)
+    })
+    .catch((promise) => {
+      if (promise.fullError) {
+        printError(promise, setError);
+      } else {
+        setError("No response from API. Make sure it is running.");
+      }
+    });
+  }
+
+    const handleShowEdit = (e) => {
+      setMsg("")
+      let input = parseInt(e.target.value)
+      let toEdit = threads.find(thread => thread.id === input)
+      setEditThread({...toEdit}) 
+      setShowEditModal(!showEditModal)
     }
 
-    const deleteMyThread = (e) => {
+    const handleEditThread = (e) => {
+      setEditThread({ ...editThread, [e.target.name]: e.target.value })
+      setError("")
+    }
+
+    const handleEditSubmit = (e) => {
       e.preventDefault()
-      threadFacade.deleteMyThread(e.currentTarget.value)
-      .then(res => {
-        setError("")
-        setMsg(`${res.title} has been deleted`)
-      })
+      threadFacade.editMyThread(editThread).then(res => {setMsg("Changes saved")
+      setShowEditModal(false)})
       .catch((promise) => {
         if (promise.fullError) {
-          printError(promise, setError);
+          printError(promise, setEditModalErr)
         } else {
-          setError("No response from API. Make sure it is running.");
+          setEditModalErr("No response from API. Make sure it is running.");
         }
       });
     }
@@ -99,18 +133,31 @@ export default function CatThreads({isLoggedIn, user, categories, threads, setTh
                     <td>{thread.posts.length > 0 ? thread.posts.pop().postedOn : ""}</td>
                     {isLoggedIn && (
                       <td>
-                        {(user.role.includes("admin") || user.role.includes("moderator")) ? (
-                        <button 
-                        onClick={deleteThread} 
-                        value={thread.id} 
-                        className="btn btn-danger">Delete
-                        </button>
-                        ) : (user.role.includes("user") && thread.user.includes(user.username)) ? (
-                          <button 
-                          onClick={deleteMyThread} 
+                        {user.role.includes("admin") ? (
+                          <Button 
+                          style={{backgroundColor: "red", color: "white"}}
+                          onClick={deleteThread} 
+                          icon="delete"
                           value={thread.id} 
-                          className="btn btn-danger">Delete
-                          </button>
+                          className="btn btn-danger">
+                          </Button>
+                        ) : (user.role !== undefined && thread.user.includes(user.username)) ? (
+                          <div>
+                          <Button
+                          style={{backgroundColor: "red", color: "white"}}
+                          onClick={deleteMyThread} 
+                          icon="delete"
+                          value={thread.id} 
+                          className="btn btn-danger">
+                          </Button>
+                          <Button
+                          style={{backgroundColor: "green", color: "white"}}
+                          onClick={handleShowEdit} 
+                          icon="edit"
+                          value={thread.id} 
+                          className="btn btn-danger">
+                          </Button>
+                          </div>
                         ): ""} 
                       </td>
                     )}
@@ -120,6 +167,33 @@ export default function CatThreads({isLoggedIn, user, categories, threads, setTh
                 </tbody>
               </table>
             </div>
+            <Modal show={showEditModal} onHide={handleHideEdit}>
+              <Modal.Header closeButton>
+                <Modal.Title style={{ marginLeft: "39%" }}>Edit thread</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <form onSubmit={handleEditSubmit}style={{ textAlign: "center" }}>
+                  <label>Thread title</label>
+                  <br />
+                  <input
+                    minLength={2}
+                    onChange={handleEditThread}
+                    name = "title"
+                    value={editThread.title}
+                  ></input>
+                  <br />
+                  <br />
+                  <input 
+                    value= "Save changes"
+                    type="submit"
+                    className="btn btn-secondary"
+                  ></input>
+                  <br/>
+                  <br/>
+                  <p style={{ color: "red" }}>{editModelErr}</p>
+                </form>
+              </Modal.Body>
+            </Modal>
         </div>
     )
 }
