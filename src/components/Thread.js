@@ -12,6 +12,7 @@ import { Modal } from "react-bootstrap";
 export default function Thread({isLoggedIn, user, threads}) {
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState("");
+    const [postError, setPostError] = useState("");
     const [msg, setMsg] = useState("")
     const [newPost, setNewPost] = useState({ "threadId": 0, "content": ""})
     const [editPost, setEditPost] = useState({id : "", content: ""})
@@ -55,7 +56,7 @@ export default function Thread({isLoggedIn, user, threads}) {
       newPost.threadId = threadId
 
       if (newPost.content.length < 1) {
-        setError("Post must be minimum 1 character long.")
+        setPostError("Post must be minimum 1 character long.")
       } else {
         postFacade.addPost(newPost).then(res => {
           let refresh = [...posts]
@@ -63,10 +64,11 @@ export default function Thread({isLoggedIn, user, threads}) {
           setPosts(refresh)
           setNewPost({ "threadId": 0, "content": "" })
           setError("")
+          setPostError("")
         })
         .catch((promise) => {
           if (promise.fullError) {
-            printError(promise, setError);
+            printError(promise, setPostError);
           } else {
             setError("No response from API. Make sure it is running.");
           }
@@ -94,6 +96,7 @@ export default function Thread({isLoggedIn, user, threads}) {
         postFacade.deleteMyPost(id)
         .then(res => getAllPosts())
         .catch((promise) => {
+          window.scrollTo({top: 0, behavior: 'smooth'})
           if (promise.fullError) {
             printError(promise, setError);
           } else {
@@ -111,6 +114,7 @@ export default function Thread({isLoggedIn, user, threads}) {
         postFacade.deletePost(id)
         .then(res => getAllPosts())
         .catch((promise) => {
+          window.scrollTo({top: 0, behavior: 'smooth'})
           if (promise.fullError) {
             printError(promise, setError);
           } else {
@@ -135,18 +139,23 @@ export default function Thread({isLoggedIn, user, threads}) {
 
     const handleEditSubmit = (e) => {
       e.preventDefault()
-      postFacade.editMyPost(editPost)
-      .then(res => {
-        setMsg("Changes saved")
-        setShowEditModal(false)
-      })
-      .catch((promise) => {
-        if (promise.fullError) {
-          printError(promise, setEditModalErr)
-        } else {
-          setEditModalErr("No response from API. Make sure it is running.");
-        }
-      });
+      if (editPost.content.length < 1) {
+        setEditModalErr("Post must be minimum 1 character long.")
+      } else {
+        postFacade.editMyPost(editPost)
+        .then(res => {
+          setMsg("Changes saved")
+          setShowEditModal(false)
+          setEditModalErr("")
+        })
+        .catch((promise) => {
+          if (promise.fullError) {
+            printError(promise, setEditModalErr)
+          } else {
+            setEditModalErr("No response from API. Make sure it is running.");
+          }
+        });
+      }
     }
 
     return (
@@ -225,6 +234,7 @@ export default function Thread({isLoggedIn, user, threads}) {
             name={"content"} 
             value={newPost.content} 
             />
+            <p style={{color : "red"}}>{postError}</p>
             <Button style={{backgroundColor : "green"}} content='Post' labelPosition='right' icon='send' primary />
           </Form>  
 

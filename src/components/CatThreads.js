@@ -53,6 +53,7 @@ export default function CatThreads({isLoggedIn, user, categories, threads, setTh
       setMsg(`${res.title} has been deleted`)
     })
     .catch((promise) => {
+      window.scrollTo({top: 0, behavior: 'smooth'})
       if (promise.fullError) {
         printError(promise, setError);
       } else {
@@ -69,6 +70,7 @@ export default function CatThreads({isLoggedIn, user, categories, threads, setTh
       setMsg(`${res.title} has been deleted`)
     })
     .catch((promise) => {
+      window.scrollTo({top: 0, behavior: 'smooth'})
       if (promise.fullError) {
         printError(promise, setError);
       } else {
