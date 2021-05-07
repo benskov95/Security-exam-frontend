@@ -3,6 +3,8 @@ import Header from "./base-components/Header";
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
+require('dotenv').config()
+
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState("");
