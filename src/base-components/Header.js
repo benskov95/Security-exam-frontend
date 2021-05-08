@@ -9,9 +9,11 @@ import {
   Redirect,
 } from "react-router-dom";
 import { Login } from "./Login";
+import { Auth } from "./Auth";
 import Home from "./Home";
 import Admin from "./Admin";
 import Register from "./Register";
+
 import NoMatch from "./NoMatch"
 import PrivateRoute from "./PrivateRoute"
 import CatThreads from "../components/CatThreads";
@@ -115,6 +117,15 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg, token, se
 
         <Route path="/register">
           <Register />
+        </Route>
+
+        <Route path="/auth">
+          <Auth
+              setLoginStatus={setLoginStatus}
+              isLoggedIn={isLoggedIn}
+              loginMsg={loginMsg}
+              setToken={setToken}
+          />
         </Route>
 
         <Route exact path="/home">

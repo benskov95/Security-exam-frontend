@@ -36,12 +36,21 @@ function apiFacade() {
     .then(handleHttpErrors)
   };
 
+  const authadmin = (user) => {
+    const options = makeOptions("POST", true, {
+      auth: user.authcode,
+      user_id: user.user_id,
+    });
+    return fetch(URL + "/api/auth", options)
+        .then(handleHttpErrors)
+  };
 
   const register = (user) => {
     const options = makeOptions("POST", false, {
       email: user.email,
       username: user.username,
       password: user.password,
+      phone: user.phone,
     });
     return fetch(URL + "/api/user", options)
     .then(handleHttpErrors)
@@ -70,7 +79,8 @@ function apiFacade() {
     loggedIn,
     login,
     logout,
-    register
+    register,
+    authadmin
   };
 }
 const facade = apiFacade();
