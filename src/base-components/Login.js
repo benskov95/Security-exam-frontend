@@ -4,7 +4,7 @@ import printError from "../utils/error";
 import Recaptcha from 'react-recaptcha';
 import { useHistory } from 'react-router-dom';
 
-export const Login = ({ isLoggedIn, loginMsg, setLoginStatus, setToken, getTokenInUse }) => {
+export const Login = ({ isLoggedIn, loginMsg, setLoginStatus, setToken }) => {
     const history = useHistory();
     const [user, setUser] = useState({ email: "", password: ""});
     const [error, setError] = useState("");
@@ -88,7 +88,7 @@ export const Login = ({ isLoggedIn, loginMsg, setLoginStatus, setToken, getToken
           <div style={{ textAlign: "center", marginTop: "30px"}}>
             <div style={{ display: "inline-block" }}>
               <Recaptcha
-                  sitekey="6Lfd9ccaAAAAABELusEIBFw6EiKtMViaRIcLQgFL"
+                  sitekey={process.env.REACT_APP_CAPTCHA_KEY}
                   render="explicit"
                   onloadCallback={recaptchaLoaded}
                   verifyCallback={verifyCallback}
