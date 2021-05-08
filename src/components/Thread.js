@@ -173,7 +173,7 @@ export default function Thread({isLoggedIn, user, threads}) {
 
               {isLoggedIn && (
                 <div>
-                {post.user.includes(user.username) && (
+                {(post.user.includes(user.username) && user.role.includes("user")) && (
                   <div>
                   <Button 
                   style={{float: "right", marginTop: "5px", backgroundColor : "red"}}
@@ -193,7 +193,7 @@ export default function Thread({isLoggedIn, user, threads}) {
                 )}
                 {(user.role.includes("admin") || (user.role.includes("moderator"))) && (
                   <Button 
-                  style={{float: "right", marginTop: "5px", backgroundColor : "#5a6268"}}
+                  style={{float: "right", marginTop: "5px", backgroundColor : "red"}}
                   icon="delete"
                   value={post.id}
                   primary

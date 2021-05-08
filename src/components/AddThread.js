@@ -40,18 +40,18 @@ export default function AddThread(){
     
     return (
    <div> 
-         <p style={{color: "red"}}>{error}</p>
+   <p style={{color: "red"}}>{error}</p>
    <div className="commentForm" onSubmit={addThread}>
       <Form reply >
       <br />
           <label>Title</label>
           <br />
-          <input required name="title" type="text"onChange={handleChange}/>
+          <input required name="title" type="text" onChange={handleChange}/>
           <p style={{textAlign: "center", marginTop: "20px"}}>Content</p>
-         <Form.TextArea required onChange={handleChange}  />
+         <Form.TextArea required name="content" onChange={handleChange}  />
          <Button style={{backgroundColor : "green"}} content='Post' labelPosition='right' icon='send' primary />
-       </Form>  
-       </div>  
-     </div>    
+      </Form>  
+      </div>  
+    </div>    
     )   
 }

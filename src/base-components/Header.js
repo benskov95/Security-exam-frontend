@@ -36,6 +36,7 @@ export default function Header({ isLoggedIn, setLoginStatus, loginMsg, token, se
     let loggedInUser = {
       "email": token.email,
       "username": token.username, 
+      "phone": token.phone,
       "role": token.role, 
       "imageUrl": token.imageUrl
     }

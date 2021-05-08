@@ -4,7 +4,7 @@ import userFacade from "../facades/userFacade";
 
 
 export default function EditUser({user, setUser}) {
-    let editDefault = { imageUrl: user.imageUrl, username: user.username, oldPassword: "", password: "", confirmNewPw: "" };
+    let editDefault = { imageUrl: user.imageUrl, username: user.username, phone: user.phone, oldPassword: "", password: "", confirmNewPw: "" };
     const [editUser, setEditUser] = useState({...editDefault});
     const [error, setError] = useState("");
     const [msg,setMsg] = useState("")
@@ -69,12 +69,14 @@ export default function EditUser({user, setUser}) {
 
     const updateUsers = (res) => {
       let updatedUser = {...editDefault}
-      updatedUser["username"] = res.username
-      updatedUser["imageUrl"] = res.imageUrl
+      updatedUser["username"] = res.username;
+      updatedUser["phone"] = res.phone;
+      updatedUser["imageUrl"] = res.imageUrl;
       setEditUser(updatedUser)
 
       let stateUser = {...user}
       stateUser["username"] = res.username;
+      stateUser["phone"] = res.phone;
       stateUser["imageUrl"] = res.imageUrl;
       setUser(stateUser)
 
@@ -113,6 +115,15 @@ export default function EditUser({user, setUser}) {
             value={editUser.username}
             minLength={4}
             maxLength={16}
+            onChange={handleChange}
+          />
+          <br />
+          <label>Phone</label><br />
+          <input
+            id="phone"
+            value={editUser.phone}
+            minLength={8}
+            maxLength={8}
             onChange={handleChange}
           />
           <br />
