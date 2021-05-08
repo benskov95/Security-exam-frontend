@@ -38,7 +38,7 @@ export const Login = ({ isLoggedIn, loginMsg, setLoginStatus, setToken, getToken
         apiFacade
             .login(user)
             .then((res) => {
-              if(res['user_id'] !== null){
+              if(res.hasOwnProperty("user_id")){
                   console.log(res['user_id']);
                   createCookie("auth", res['user_id'], 1)
                   history.push("/auth");

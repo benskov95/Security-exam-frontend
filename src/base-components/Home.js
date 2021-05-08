@@ -27,7 +27,7 @@ export default function Home({isLoggedIn, categories, setCategories}) {
 
   return (
     <div>
-      <h1 style={{marginTop: "70px"}}> Welcome to Forum™  </h1>
+      <h1 style={{marginTop: "70px"}}> Welcome to BornIT's Forum™  </h1>
       <h4 style={{marginTop: "20px", marginBottom: "20px"}}>Choose a topic to read and write threads about to get started.</h4>
       {isLoggedIn && (
         <p style={{fontSize: "12px"}}>Note: if you want to edit your profile, you can do so by clicking your profile picture in the top right corner.</p>
