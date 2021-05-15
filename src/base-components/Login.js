@@ -5,10 +5,11 @@ import Recaptcha from 'react-recaptcha';
 import { useHistory } from 'react-router-dom';
 
 export const Login = ({ isLoggedIn, loginMsg, setLoginStatus, setToken }) => {
-    const history = useHistory();
-    const [user, setUser] = useState({ email: "", password: ""});
-    const [error, setError] = useState("");
-    const [verified, setVerified] = useState(false);
+  const history = useHistory();
+  const [user, setUser] = useState({ email: "", password: ""});
+  const [error, setError] = useState("");
+  const [verified, setVerified] = useState(false);
+  const [cToken, setCToken] = useState("");
 
   const handleChange = (e) => {
     setError("");
@@ -21,6 +22,7 @@ export const Login = ({ isLoggedIn, loginMsg, setLoginStatus, setToken }) => {
 
   const verifyCallback = (response) => {
     if (response) {
+      setCToken(response)
       setVerified(true);
     }
   };
@@ -34,31 +36,31 @@ export const Login = ({ isLoggedIn, loginMsg, setLoginStatus, setToken }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-      if (verified) {
-        apiFacade
-            .login(user)
-            .then((res) => {
-              if(res.hasOwnProperty("user_id")){
-                  console.log(res['user_id']);
-                  createCookie("auth", res['user_id'], 1)
-                  history.push("/auth");
-              }else{
-
-              setLoginStatus(!isLoggedIn)
-              setToken(JSON.parse(atob(res.token.split(".")[1])))
-              apiFacade.setTokenInUse(res.token);
-              }
-            })
-            .catch((promise) => {
-              if (promise.fullError) {
-                printError(promise, setError);
-              } else {
-                setError("No response from API. Make sure it is running.");
-              }
-            });
-      } else {
-        setError("Please verify that you are a human!");
-      }
+    if (verified) {
+      let verifiedUser = {email: user.email, password: user.password, captchaToken: cToken}
+      apiFacade
+          .login(verifiedUser)
+          .then((res) => {
+            if(res.hasOwnProperty("user_id")){
+                console.log(res['user_id']);
+                createCookie("auth", res['user_id'], 1)
+                history.push("/auth");
+            } else {
+            setLoginStatus(!isLoggedIn)
+            setToken(JSON.parse(atob(res.token.split(".")[1])))
+            apiFacade.setTokenInUse(res.token);
+            }
+          })
+          .catch((promise) => {
+            if (promise.fullError) {
+              printError(promise, setError);
+            } else {
+              setError("No response from API. Make sure it is running.");
+            }
+          });
+    } else {
+      setError("Please verify that you are a human!");
+    }
   };
 
   const logout = () => {
@@ -88,7 +90,7 @@ export const Login = ({ isLoggedIn, loginMsg, setLoginStatus, setToken }) => {
           <div style={{ textAlign: "center", marginTop: "30px"}}>
             <div style={{ display: "inline-block" }}>
               <Recaptcha
-                  sitekey={process.env.REACT_APP_CAPTCHA_KEY}
+                  sitekey={process.env.REACT_APP_CAPTCHA_SITE_KEY}
                   render="explicit"
                   onloadCallback={recaptchaLoaded}
                   verifyCallback={verifyCallback}
